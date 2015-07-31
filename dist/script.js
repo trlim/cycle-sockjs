@@ -13,34 +13,30 @@ var _sockjsClient = require('sockjs-client');
 
 var _sockjsClient2 = _interopRequireDefault(_sockjsClient);
 
-function createSockJSDriver(url, _reserved, options) {
+function makeSockJSDriver(url, _reserved, options) {
   var sockjs = new _sockjsClient2['default'](url, _reserved, options);
 
-  function get(eventName) {
+  return function sockJSDriver(event$) {
+    event$.forEach(function (event) {
+      return sockjs.send(event);
+    });
     return _cycleCore.Rx.Observable.create(function (observer) {
-      var sub = sockjs.on(eventName, function (message) {
-        observer.onNext(message);
-      });
+      sockjs.onopen = function () {
+        console.log('open', url);
+      };
+      sockjs.onmessage = function (e) {
+        observer.onNext(e.data);
+      };
+      sockjs.onclose = function () {
+        console.log('close', url);
+      };
+
       return function dispose() {
-        sub.dispose();
+        sockjs.close();
       };
     });
-  }
-
-  function publish(messageType, message) {
-    socjs.emit(messageType, message);
-  }
-
-  return function sockJSDriver(events$) {
-    events$.forEach(function (event) {
-      return publish(event.messageType, event.message);
-    });
-    return {
-      get: get,
-      dispose: sockjs.destroy.bind(sockjs)
-    };
   };
 }
 
-exports['default'] = { createSockJSDriver: createSockJSDriver };
+exports['default'] = { makeSockJSDriver: makeSockJSDriver };
 module.exports = exports['default'];

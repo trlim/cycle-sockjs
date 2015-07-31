@@ -1,32 +1,30 @@
 /* jshint esnext: true */
+'use strict';
+
 import {Rx} from '@cycle/core';
 import SockJS from 'sockjs-client';
 
-function createSockJSDriver(url, _reserved, options) {
-  const sockjs = new SockJS(url, _reserved, options);
+function makeSockJSDriver(url, _reserved, options) {
+  let sockjs = new SockJS(url, _reserved, options);
 
-  function get(eventName) {
+  return function sockJSDriver(event$) {
+    event$.forEach(event => sockjs.send(event));
     return Rx.Observable.create(observer => {
-      const sub = sockjs.on(eventName, function (message) {
-        observer.onNext(message);
-      });
+      sockjs.onopen = function() {
+        console.log('open', url);
+      };
+      sockjs.onmessage = function(e) {
+        observer.onNext(e.data);
+      };
+      sockjs.onclose = function() {
+        console.log('close', url);
+      };
+
       return function dispose() {
-        sub.dispose();
+        sockjs.close();
       };
     });
-  }
-
-  function publish(messageType, message) {
-    socjs.emit(messageType, message);
-  }
-
-  return function sockJSDriver(events$) {
-    events$.forEach(event => publish(event.messageType, event.message));
-    return {
-      get,
-      dispose: sockjs.destroy.bind(sockjs)
-    };
   };
 }
 
-export default {createSockJSDriver};
+export default {makeSockJSDriver};

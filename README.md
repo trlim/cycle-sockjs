@@ -5,28 +5,28 @@ Based on [Cycle-Socket.IO](https://github.com/cgeorg/cycle-socket.io)
 
 ## Usage
 
-```jsvascript
+```javascript
 import Cycle from '@cycle/core';
 import SockJS from 'cycle-sockjs';
 
-var computer = function ({sockjs, dom}) {
-    const vtree$ = render(dom);
+var main({sockjs, dom}) {
+  const vtree$ = render(dom);
 
-    const incomingMessages$ = sockjs.get('messageType');
-    const outgoingMessages$ = stream$.map( eventData => {
-      {
-        messageType: 'someEvent',
-        message: eventData
-      }
-    });
+  let incoming$ = sockjs;
+  let outgoing$ = incoming$.map(message => {
+    {
+      message
+    }
+  });
 
-    return {dom: vtree$, sockJS: outgoingMessages$}
+  return {dom: vtree$, sockjs: outgoing$}
 };
 
-var sockjsDriver = SockJS.createSockJSDriver(window.location.origin);
 var domDriver = Cycle.makeDOMDriver(document.body);
-Cycle.run(computer, {
-    dom: domDriver,
-    sockjs: sockjsDriver
+var sockJSDriver = SockJS.makeSockJSDriver(window.location.origin);
+
+Cycle.run(main, {
+  dom: domDriver,
+  sockjs: sockJSDriver
 });
 ```
