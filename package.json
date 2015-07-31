@@ -1,0 +1,23 @@
+{
+  "name": "cycle-sockjs",
+  "version": "0.0.1",
+  "description": "A Cycle driver for applications using SockJS",
+  "main": "dist/script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel src/index.js --out-file dist/script.js"
+  },
+  "keywords": [
+    "cycle",
+    "sockjs"
+  ],
+  "author": "Tae-il Lim",
+  "license": "MIT",
+  "peerDependencies": {
+    "@cycle/core": "^1.0.1",
+    "sockjs": "^0.3.15"
+  },
+  "devDependencies": {
+    "babel": "^5.8.19"
+  }
+}
