@@ -9,21 +9,17 @@ Based on [Cycle-Socket.IO](https://github.com/cgeorg/cycle-socket.io)
 import Cycle from '@cycle/core';
 import SockJS from 'cycle-sockjs';
 
-var main({sockjs, dom}) {
+var main({dom, sockjs}) {
   const vtree$ = render(dom);
 
   let incoming$ = sockjs;
-  let outgoing$ = incoming$.map(message => {
-    {
-      message
-    }
-  });
+  let outgoing$ = incoming$.map(message => message);
 
   return {dom: vtree$, sockjs: outgoing$}
 };
 
 var domDriver = Cycle.makeDOMDriver(document.body);
-var sockJSDriver = SockJS.makeSockJSDriver(window.location.origin);
+var sockJSDriver = SockJS.makeSockJSDriver('http://localhost:9999/echo');
 
 Cycle.run(main, {
   dom: domDriver,
