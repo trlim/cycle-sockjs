@@ -16,14 +16,13 @@ var _sockjsClient2 = _interopRequireDefault(_sockjsClient);
 function makeSockJSDriver(url, _reserved, options) {
   var sockjs = new _sockjsClient2['default'](url, _reserved, options);
 
+  sockjs.onopen = function () {};
+
   return function sockJSDriver(event$) {
     event$.forEach(function (event) {
       return sockjs.send(event);
     });
     return _cycleCore.Rx.Observable.create(function (observer) {
-      sockjs.onopen = function () {
-        console.log('open', url);
-      };
       sockjs.onmessage = function (e) {
         observer.onNext(e.data);
       };

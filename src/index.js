@@ -7,12 +7,12 @@ import SockJS from 'sockjs-client';
 function makeSockJSDriver(url, _reserved, options) {
   let sockjs = new SockJS(url, _reserved, options);
 
+  sockjs.onopen = function() {
+  };
+
   return function sockJSDriver(event$) {
     event$.forEach(event => sockjs.send(event));
     return Rx.Observable.create(observer => {
-      sockjs.onopen = function() {
-        console.log('open', url);
-      };
       sockjs.onmessage = function(e) {
         observer.onNext(e.data);
       };
