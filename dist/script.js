@@ -27,7 +27,7 @@ function makeSockJSDriver(url, _reserved, options) {
         observer.onNext(e.data);
       };
       sockjs.onclose = function () {
-        console.log('close', url);
+        observer.onCompleted();
       };
 
       return function dispose() {
